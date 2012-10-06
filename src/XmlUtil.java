@@ -18,6 +18,7 @@ public class XmlUtil {
 		if (builder==null) {
 			try {
 				factory = DocumentBuilderFactory.newInstance();
+				factory.setNamespaceAware(true);
 				builder = factory.newDocumentBuilder();
 			} catch (Exception e) {
 				System.err.println("Cannot create Document Builder");

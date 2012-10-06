@@ -18,18 +18,9 @@ public class gexf2json {
 			System.err.println("usage java -jar input.gexf output.json");//[large]
 			System.exit(1);
 		}
-		//Path filename=Paths.get(args[0]);
+
 		String filename=(args[0]);
 		String outputFile=(args[1]);
-		//boolean readInPieces=false;
-		//if (args.length==3 && "large".equalsIgnoreCase(args[2])) readInPieces=true;
-		
-		/*BufferedReader br = new BufferedReader(new FileReader(filename));
-		StringBuilder sb;
-		String line  = br.readLine();
-		while ( line != null) {
-			sb.append(line);
-		}*/
 		Document doc = XmlUtil.fileToXml(filename);
 		
 		////////////////////////////////////////////////////////////////////////
@@ -88,7 +79,6 @@ public class gexf2json {
 
 		for (int i=0; i<nodesNodes.getLength(); i++) {
 			Element nodes = (Element)nodesNodes.item(i);
-			
 			//The list of xml nodes 'node' (no 's')
 			NodeList listNodes = nodes.getElementsByTagName("node");
 			for (int j=0; j<listNodes.getLength(); j++) {
@@ -103,7 +93,7 @@ public class gexf2json {
 				double x = 100 - 200*Math.random();
 				double y = 100 - 200*Math.random();
 				String color="";
-
+				
 				//SAH: Original JS code tested for size.length in ternary; is len(...)!=0 appropriate replacement?
 				NodeList sizeNodes = nodeEl.getElementsByTagName("size");
 				sizeNodes = (sizeNodes.getLength()!=0)? sizeNodes : nodeEl.getElementsByTagNameNS("*","size");
@@ -138,24 +128,8 @@ public class gexf2json {
 							);
 				}
 				
-				//Create Node
-				//node = {"id":id,"label":label, "size":size, "x":x, "y":y, "attributes":{}, "color":color};  #The graph node
-				/*JSONObject node = new JSONObject(), attributes = new JSONObject();
-				try {
-					node.put("id", id);
-					node.put("label", label);
-					node.put("size", size);
-					node.put("x", x);
-					node.put("y", y);
-					node.put("color", color);
-					node.put("attributes",attributes);					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
+
 				GraphNode node = new GraphNode(id);
-				//Collection node = new ArrayList();
-				//node.add(5);
 				node.setLabel(label);
 				node.setSize(size);
 				node.setX(x);
@@ -170,18 +144,9 @@ public class gexf2json {
 					Element attvalueNode = (Element)attvalueNodes.item(k);
 					String attr = attvalueNode.getAttribute("for");
 					String val = attvalueNode.getAttribute("value");
-					//node["attributes"][nodesAttributesDict[attr]]=val
-					/*try {
-						attributes.put(attr, val);
-						//attributes.put(nodesAttributesDict.get(attr), val);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}*/
 					node.putAttribute(nodesAttributesDict.get(attr), val);
 				}
 
-				//jsonNodes.put(node);
 				jNodes.add(node);
 			}//end <node>
 		}//end <nodes>
@@ -229,21 +194,13 @@ public class gexf2json {
 					}
 				}
 				
-				/*NodeList attvalueNodes = edgeNode.getElementsByTagName("attvalue");
+				NodeList attvalueNodes = edgeNode.getElementsByTagName("attvalue");
 				for (int k=0; k<attvalueNodes.getLength(); k++) {
 					Element attvalueNode = (Element)attvalueNodes.item(k);
 					String attr = attvalueNode.getAttribute("for");
 					String val = attvalueNode.getAttribute("value");
-					//edge["attributes"][edgesAttributesDict[attr]]=val
-					try {
-						attributes.put(attr, val);
-						//attributes.put(edgesAttributesDict.get(attr), val);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}*/
+					edge.putAttribute(attr, val);
+				}
 
 				jsonEdges.add(edge);
 			}//end <edge>
