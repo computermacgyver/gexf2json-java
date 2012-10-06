@@ -3,19 +3,43 @@ import java.util.HashMap;
 
 public class GraphEdge extends GraphElement{
 	
-	private String id;
+		
 	private String label;
 	private String source;
 	private String target;
-	private HashMap<String,String> attributes;
 	
 	public GraphEdge(String id) {
-		this.id=id;
+		super(id);
 		label=id;
 		source="";
 		target="";
-		attributes=new HashMap<String,String>();
 	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	
+	
 	
 	
 

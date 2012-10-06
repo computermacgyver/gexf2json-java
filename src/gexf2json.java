@@ -1,13 +1,8 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -15,7 +10,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 public class gexf2json {
 
@@ -87,9 +81,7 @@ public class gexf2json {
 		////////////////////////////////////////////////////////////////////////
 		
 		
-		JSONArray jsonNodes = new JSONArray();
-		Gson gson = new Gson();
-		HashSet<GraphNode> jNodes = new HashSet<GraphNode>();
+		HashSet<GraphElement> jNodes = new HashSet<GraphElement>();
 		
 		//The list of xml nodes 'nodes' (plural)
 		NodeList nodesNodes = doc.getElementsByTagName("nodes");
@@ -189,7 +181,7 @@ public class gexf2json {
 					node.putAttribute(nodesAttributesDict.get(attr), val);
 				}
 
-				jsonNodes.put(node);
+				//jsonNodes.put(node);
 				jNodes.add(node);
 			}//end <node>
 		}//end <nodes>
@@ -198,7 +190,8 @@ public class gexf2json {
 		//							Edges									  //
 		////////////////////////////////////////////////////////////////////////
 		
-		JSONArray jsonEdges = new JSONArray();
+		//JSONArray jsonEdges = new JSONArray();
+		HashSet<GraphElement> jsonEdges = new HashSet<GraphElement>();
 		NodeList edgesNodes = doc.getElementsByTagName("edges");
 		for (int i=0; i<edgesNodes.getLength(); i++) {
 			Element edgesNode = (Element)edgesNodes.item(i);
@@ -212,18 +205,7 @@ public class gexf2json {
 				String id = (edgeNode.hasAttribute("id")) ? edgeNode.getAttribute("id") : String.valueOf(j);
 
 				
-				JSONObject edge = new JSONObject(), attributes= new JSONObject();
-				//GraphEdge edge = new GraphEdge(id);
-				try {
-					edge.put("id", id);
-					//edge.put("source", source);
-					//edge.put("target", target);
-					//edge.put("label", label);
-					edge.put("attributes", attributes);					
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				GraphEdge edge = new GraphEdge(id);
 				
 				//Attributes within <edge> tag
 				NamedNodeMap attrs = edgeNode.getAttributes();
@@ -234,21 +216,16 @@ public class gexf2json {
 					String val = item.getNodeValue();
 					switch(n) {
 					case "source":
+						edge.setSource(val);
+						break;
 					case "target":
+						edge.setTarget(val);
+						break;
 					case "label":
-						try {
-							edge.put(n, val);
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						edge.setLabel(val);
+						break;
 					default:
-						try {
-							attributes.put(n,val);
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						edge.putAttribute(n,val);
 					}
 				}
 				
@@ -268,27 +245,31 @@ public class gexf2json {
 
 				}*/
 
-				jsonEdges.put(edge);
+				jsonEdges.add(edge);
 			}//end <edge>
 		}//end <edges>
 		
 		
 		//Combine nodes and edges
-		JSONObject json = new JSONObject();
+		/*JSONObject json = new JSONObject();
 		try {
 			json.put("edges", jsonEdges);
 			json.put("nodes", jsonNodes);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
+		HashMap<String,HashSet<GraphElement>> json = new HashMap<String,HashSet<GraphElement>>();
+		json.put("nodes", jNodes);
+		json.put("edges",jsonEdges);
 		
 		
 		//output is outputFile
+		Gson gson = new Gson();
 		FileWriter writer;
 		try {
 			writer = new FileWriter(outputFile);
-			gson.toJson(jNodes, writer);
+			gson.toJson(json, writer);
 			//writer.write(jsonEdges.toString(4));
 			//json.write(writer);
 			writer.close();
