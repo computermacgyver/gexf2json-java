@@ -1,3 +1,4 @@
+package uk.ac.ox.oii.gexf2json;
 
 public class GraphNode  extends GraphElement{
 	

@@ -1,3 +1,4 @@
+package uk.ac.ox.oii.gexf2json;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,9 +20,16 @@ public class gexf2json {
 			System.exit(1);
 		}
 
-		String filename=(args[0]);
+		String inputFile=(args[0]);
 		String outputFile=(args[1]);
-		Document doc = XmlUtil.fileToXml(filename);
+		
+		gexfTojson(inputFile,outputFile);
+		
+	}
+	
+	public static void gexfTojson (String inputFile, String outputFile ){
+		
+		Document doc = XmlUtil.fileToXml(inputFile);
 		
 		////////////////////////////////////////////////////////////////////////
 		//					Attribute Dictionaries							  //
@@ -164,13 +172,16 @@ public class gexf2json {
 			for (int j=0; j<edgeNodes.getLength(); j++) {
 				Element edgeNode = (Element)edgeNodes.item(j);
 
-				//String source = edgeNode.getAttribute("source");
-				//String target = edgeNode.getAttribute("target");
-				//String label = edgeNode.getAttribute("label");
+				String source = edgeNode.getAttribute("source");
+				String target = edgeNode.getAttribute("target");
+				String label = edgeNode.getAttribute("label");
 				String id = (edgeNode.hasAttribute("id")) ? edgeNode.getAttribute("id") : String.valueOf(j);
 
 				
 				GraphEdge edge = new GraphEdge(id);
+				edge.setLabel(label);
+				edge.setTarget(target);
+				edge.setSource(source);
 				
 				//Attributes within <edge> tag
 				NamedNodeMap attrs = edgeNode.getAttributes();
@@ -179,7 +190,12 @@ public class gexf2json {
 					item=attrs.item(k);
 					String n = item.getNodeName();
 					String val = item.getNodeValue();
-					switch(n) {
+					//Only version java 1.7+
+					//ignore, label,target,source,id
+					if ("label".equalsIgnoreCase(n) || "target".equalsIgnoreCase(n) || 
+							"source".equalsIgnoreCase(n) || "id".equalsIgnoreCase(n))
+						continue;
+					/*switch(n) {
 					case "source":
 						edge.setSource(val);
 						break;
@@ -189,9 +205,9 @@ public class gexf2json {
 					case "label":
 						edge.setLabel(val);
 						break;
-					default:
+					default:*/
 						edge.putAttribute(n,val);
-					}
+					//}
 				}
 				
 				NodeList attvalueNodes = edgeNode.getElementsByTagName("attvalue");
