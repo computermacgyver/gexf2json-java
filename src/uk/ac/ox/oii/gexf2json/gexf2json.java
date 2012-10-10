@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
-public class gexf2json implements Runnable {
+public class gexf2json {
 
 	public static void main(String[] args) {
 		if (args.length!=2) {
@@ -24,34 +24,27 @@ public class gexf2json implements Runnable {
 		String inputFile=(args[0]);
 		String outputFile=(args[1]);
 		
-		gexf2json thing = new gexf2json(inputFile,outputFile);
-		new Thread(thing).start();
+		//gexf2json thing = new gexf2json(inputFile,outputFile);
+		//new Thread(thing).start();
+		//thing.run();
+		gexf2json.parseFiles(inputFile,outputFile);
 		
 	}
 	
-	private String inputFile;
-	private String outputFile;
-	private boolean deleteInput;
-	
-	public gexf2json(String inFile, String outFile, boolean delete) {
-		inputFile=inFile;
-		outputFile=outFile;
-		deleteInput=delete;
+	public static void parseFiles(String inputFile, String outputFile) {
+		Document doc = XmlUtil.fileToXml(inputFile);
+		run(doc,outputFile);
 	}
 	
-	public gexf2json(String inFile, String outFile) {
-		this(inFile,outFile,false);
+	public static String parseString(String input) {
+		Document doc = XmlUtil.stringToXML(input);
+		return run(doc,null);
 	}
-	
-	public void runInNewThread() {
-		new Thread(this).start();
-	}
-	
-	@Override
-	public void run() {
+
+	public static String run(Document doc, String outputFile) {
 		//public static void gexfTojson (String inputFile, String outputFile ){
 		
-		Document doc = XmlUtil.fileToXml(inputFile);
+		
 		
 		////////////////////////////////////////////////////////////////////////
 		//					Attribute Dictionaries							  //
@@ -261,22 +254,22 @@ public class gexf2json implements Runnable {
 		
 		//output is outputFile
 		Gson gson = new Gson();
-		FileWriter writer;
-		try {
-			writer = new FileWriter(outputFile);
-			gson.toJson(json, writer);
-			//writer.write(jsonEdges.toString(4));
-			//json.write(writer);
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		//We are done parsing. Should we delete the input gexf?
-		if (deleteInput) {
-			File f = new File(inputFile);
-			f.delete();
+		if (outputFile==null) {
+			return gson.toJson(json);
+		} else {
+			FileWriter writer;
+			try {
+				writer = new FileWriter(outputFile);
+				gson.toJson(json, writer);
+				//writer.write(jsonEdges.toString(4));
+				//json.write(writer);
+				writer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;			
 		}
 		
 	}

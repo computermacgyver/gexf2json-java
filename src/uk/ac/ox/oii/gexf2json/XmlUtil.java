@@ -29,7 +29,7 @@ public class XmlUtil {
 		return builder;
 	}
 	
-	public static Node stringToXML(String xml) {
+	public static Document stringToXML(String xml) {
 		/*Input is xml fragment starting with <page> and ending with </page>*/
 		DocumentBuilder b = getDocumentBuilder();
 		Document xmlDoc=null;
@@ -37,11 +37,11 @@ public class XmlUtil {
 	        InputSource is = new InputSource(new StringReader(xml));
 	        xmlDoc = b.parse(is);
 		} catch (Exception e) {
-			System.err.println("Cannot parse WikiArticle fragment.");
+			System.err.println("Cannot parse XML string.");
 			e.printStackTrace();
 			return null;
 		}
-		return xmlDoc.getFirstChild();
+		return xmlDoc;
 	}
 	
 	public static Document fileToXml(String filename) {
@@ -52,7 +52,7 @@ public class XmlUtil {
 	        //InputSource is = new InputSource(new StringReader(xml));
 	        xmlDoc = b.parse(filename);
 		} catch (Exception e) {
-			System.err.println("Cannot parse WikiArticle fragment.");
+			System.err.println("Cannot parse XML file.");
 			e.printStackTrace();
 			return null;
 		}
