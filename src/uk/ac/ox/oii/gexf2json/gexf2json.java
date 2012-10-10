@@ -1,4 +1,5 @@
 package uk.ac.ox.oii.gexf2json;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
-public class gexf2json {
+public class gexf2json implements Runnable {
 
 	public static void main(String[] args) {
 		if (args.length!=2) {
@@ -23,11 +24,32 @@ public class gexf2json {
 		String inputFile=(args[0]);
 		String outputFile=(args[1]);
 		
-		gexfTojson(inputFile,outputFile);
+		gexf2json thing = new gexf2json(inputFile,outputFile);
+		new Thread(thing).start();
 		
 	}
 	
-	public static void gexfTojson (String inputFile, String outputFile ){
+	private String inputFile;
+	private String outputFile;
+	private boolean deleteInput;
+	
+	public gexf2json(String inFile, String outFile, boolean delete) {
+		inputFile=inFile;
+		outputFile=outFile;
+		deleteInput=delete;
+	}
+	
+	public gexf2json(String inFile, String outFile) {
+		this(inFile,outFile,false);
+	}
+	
+	public void runInNewThread() {
+		new Thread(this).start();
+	}
+	
+	@Override
+	public void run() {
+		//public static void gexfTojson (String inputFile, String outputFile ){
 		
 		Document doc = XmlUtil.fileToXml(inputFile);
 		
@@ -249,11 +271,15 @@ public class gexf2json {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}// catch (JSONException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		//}
-
+		}
+		
+		//We are done parsing. Should we delete the input gexf?
+		if (deleteInput) {
+			File f = new File(inputFile);
+			f.delete();
+		}
 		
 	}
+
+	
 }

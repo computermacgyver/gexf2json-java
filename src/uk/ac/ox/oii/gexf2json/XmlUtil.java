@@ -29,7 +29,7 @@ public class XmlUtil {
 		return builder;
 	}
 	
-	public static Node fragmentToXML(String xml) {
+	public static Node stringToXML(String xml) {
 		/*Input is xml fragment starting with <page> and ending with </page>*/
 		DocumentBuilder b = getDocumentBuilder();
 		Document xmlDoc=null;
